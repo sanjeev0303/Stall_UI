@@ -67,3 +67,43 @@
   }
 }
 
+
+
+
+@keyframes float {
+    0%, 100% { transform: translateY(-8px) rotate(-1deg); }
+    50% { transform: translateY(8px) rotate(1deg); }
+}
+
+@keyframes swing {
+    0%, 100% { transform: rotate(-2deg); }
+    50% { transform: rotate(2deg); }
+}
+
+@keyframes threadSway {
+    0%, 100% { transform: translateX(-1px); }
+    50% { transform: translateX(1px); }
+}
+
+.floating-text {
+    animation: float 3s ease-in-out infinite;
+    transform-origin: center top;
+}
+
+.thread {
+    animation: threadSway 2s ease-in-out infinite;
+}
+
+.hanging-container {
+    animation: swing 4s ease-in-out infinite;
+    transform-origin: center top;
+}
+
+.thread-line {
+    background: linear-gradient(180deg,
+        rgba(255,255,255,0.8) 0%,
+        rgba(255,255,255,0.6) 30%,
+        rgba(255,255,255,0.4) 60%,
+        rgba(255,255,255,0.2) 100%);
+    box-shadow: 0 0 2px rgba(255,255,255,0.3);
+}
