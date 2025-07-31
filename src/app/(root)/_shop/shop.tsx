@@ -7,10 +7,11 @@ import Ceiling from "./Ceiling";
 import Exhibitor from "./Exhibitor";
 import Floor from "./Floor";
 import Wall from "./Wall";
+import HangingBoard from "./HangingBoard";
 
 export default function StallRoomSlider() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [autoPlay, setAutoPlay] = useState(true);
+  const [autoPlay, setAutoPlay] = useState(false);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   const { data } = useShop();
@@ -126,53 +127,7 @@ export default function StallRoomSlider() {
           <Wall banner={currentSlideData?.banner}>
             <div className="flex flex-col">
               {/* Title on top of the wall - Hanging Name */}
-              <div className="absolute z-[100] top-0 left-1/2 -translate-x-1/2">
-                {/* Hanging Threads */}
-                <div
-                  className="thread absolute flex justify-center w-full"
-                  style={{ top: 0 }}
-                >
-                  {/* Center thread */}
-                  <div className="thread-line w-[2px] md:h-12 h-9 bg-gradient-to-b from-white/80 via-white/60 to-white/20 absolute left-1/2 -translate-x-1/2 shadow-sm"></div>
-                  {/* Left thread */}
-                  <div className="thread-line w-[2px] md:h-12 h-9 bg-gradient-to-b from-white/80 via-white/60 to-white/20 absolute left-9 -translate-x-1/2 shadow-sm"></div>
-                  {/* Right thread */}
-                  <div className="thread-line w-[2px] md:h-12 h-9 bg-gradient-to-b from-white/80 via-white/60 to-white/20 absolute right-9 -translate-x-1/2 shadow-sm"></div>
-                </div>
-
-                {/* Hanging Name Container */}
-                <div className="hanging-container relative md:top-12 top-9">
-                  <div className="w-[30%] min-w-[300px] h-20 bg-black/60 backdrop-blur-xl border border-white/20 rounded-lg shadow-2xl relative overflow-hidden">
-                    {/* Glow Effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-pink-500/10 animate-pulse"></div>
-
-                    {/* Hanging Points */}
-                    <div className="absolute -top-1 left-8 w-2 h-2 bg-white/80 rounded-full shadow-lg"></div>
-                    <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white/80 rounded-full shadow-lg"></div>
-                    <div className="absolute -top-1 right-8 w-2 h-2 bg-white/80 rounded-full shadow-lg"></div>
-
-                    {/* Floating Text */}
-                    <div className="floating-text flex items-center justify-center h-full">
-                      <div className="text-3xl md:text-5xl text-transparent font-extrabold bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500 bg-clip-text drop-shadow-lg">
-                        {currentSlideData?.name || "Loading..."}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Floating Particles */}
-                  <div className="absolute -inset-4 pointer-events-none">
-                    <div className="absolute top-2 left-4 w-1 h-1 bg-pink-400 rounded-full opacity-60 animate-ping"></div>
-                    <div
-                      className="absolute top-8 right-6 w-1 h-1 bg-purple-400 rounded-full opacity-60 animate-ping"
-                      style={{ animationDelay: "1s" }}
-                    ></div>
-                    <div
-                      className="absolute bottom-4 left-8 w-1 h-1 bg-blue-400 rounded-full opacity-60 animate-ping"
-                      style={{ animationDelay: "2s" }}
-                    ></div>
-                  </div>
-                </div>
-              </div>
+              <HangingBoard currentSlideData={currentSlideData} />
 
               {/* Main Exhibitor Display */}
               <div className="w-full max-w-sm xs:max-w-md sm:max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto flex justify-center items-center mt-32 md:mt-40">
