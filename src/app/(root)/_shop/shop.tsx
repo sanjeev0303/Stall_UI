@@ -101,18 +101,24 @@ export default function StallRoomSlider() {
           </div>
           <button
             onClick={() => setAutoPlay(!autoPlay)}
-            className={`px-2 xs:px-3 sm:px-4 py-1.5 xs:py-2 rounded-full text-xs xs:text-sm font-medium ${
-              autoPlay
-                ? "bg-green-500/80 text-white hover:bg-green-600/80"
-                : "bg-gray-500/80 text-white hover:bg-gray-600/80"
-            }`}
+            className={`px-2 xs:px-3 sm:px-4 py-1.5 xs:py-2 rounded-full text-xs xs:text-sm font-medium ${autoPlay
+              ? "bg-green-500/80 text-white hover:bg-green-600/80"
+              : "bg-gray-500/80 text-white hover:bg-gray-600/80"
+              }`}
           >
             {autoPlay ? "⏸️ Pause" : "▶️ Play"}
           </button>
         </div>
 
         {/* Slide content */}
-        <div className="flex-1 relative">
+        {/* Slide content */}
+        <div
+          className="flex-1 relative"
+          style={{
+            background: "radial-gradient(circle, rgba(0,0,0,0.99) 73%, rgba(95,136,194,1) 100%)"
+          }}
+        >
+
           {/* Ceiling of the shop */}
           <Ceiling />
 

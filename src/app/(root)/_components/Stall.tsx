@@ -58,7 +58,7 @@ const Stall = () => {
   useEffect(() => {
     const fetchCompanyData = async () => {
       try {
-        const response = await fetch('https://opexn-expo.onrender.com/api/startup/1');
+        const response = await fetch('http://localhost:8000/api/startup/1');
         if (!response.ok) {
           throw new Error('Failed to fetch company data');
         }

@@ -12,7 +12,7 @@ export const useShop = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get("https://opexn-expo.onrender.com/api/startup");
+                const response = await axios.get("http://localhost:8000/api/startup");
                 setData(response.data);
             } catch (err) {
                 setError(err);
