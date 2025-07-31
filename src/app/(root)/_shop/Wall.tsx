@@ -3,7 +3,7 @@ import React from 'react'
 const Wall = ({children, banner}: {children: React.ReactNode, banner: string}) => {
   return (
         <div
-            className="flex-1 w-full relative overflow-hidden min-h-[calc(100vh-64px)] xs:min-h-[calc(100vh-80px)] sm:min-h-[calc(100vh-96px)] md:min-h-[calc(100vh-112px)] lg:min-h-[calc(100vh-160px)]"
+            className="flex-1 w-full relative overflow-hidden min-h-[calc(100vh-64px)] xs:min-h-[calc(100vh-80px)] sm:min-h-[calc(100vh-96px)] md:min-h-[calc(100vh-112px)] lg:min-h-[calc(100vh-140px)]"
             style={{
                 clipPath: "polygon(4% 0%, 96% 0%, 96% 100%, 4% 100%)",
                 backgroundImage: `url(${banner})`,
