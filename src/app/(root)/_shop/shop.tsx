@@ -8,6 +8,7 @@ import Exhibitor from "./Exhibitor";
 import Floor from "./Floor";
 import Wall from "./Wall";
 import HangingBoard from "./HangingBoard";
+import { useRouter } from "next/navigation";
 
 export default function StallRoomSlider() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -15,6 +16,7 @@ export default function StallRoomSlider() {
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   const { data } = useShop();
+  const router = useRouter();
 
   const slides = data ?? [];
 
@@ -100,15 +102,6 @@ export default function StallRoomSlider() {
           <div className="bg-black/70 backdrop-blur-sm text-white px-2 xs:px-3 sm:px-4 py-1.5 xs:py-2 rounded-full text-xs xs:text-sm font-medium">
             {currentSlide + 1} / {totalSlides}
           </div>
-          <button
-            onClick={() => setAutoPlay(!autoPlay)}
-            className={`px-2 xs:px-3 sm:px-4 py-1.5 xs:py-2 rounded-full text-xs xs:text-sm font-medium ${autoPlay
-              ? "bg-green-500/80 text-white hover:bg-green-600/80"
-              : "bg-gray-500/80 text-white hover:bg-gray-600/80"
-              }`}
-          >
-            {autoPlay ? "⏸️ Pause" : "▶️ Play"}
-          </button>
         </div>
 
         {/* Slide content */}
@@ -116,10 +109,10 @@ export default function StallRoomSlider() {
         <div
           className="flex-1 relative"
           style={{
-            background: "radial-gradient(circle, rgba(0,0,0,0.99) 73%, rgba(95,136,194,1) 100%)"
+            background:
+              "radial-gradient(circle, rgba(255,223,70,0.98) 70%, rgba(255,140,0,1) 100%)",
           }}
         >
-
           {/* Ceiling of the shop */}
           <Ceiling />
 
@@ -144,8 +137,6 @@ export default function StallRoomSlider() {
                   />
                 </div>
               </div>
-
-
             </div>
           </Wall>
 
@@ -154,49 +145,61 @@ export default function StallRoomSlider() {
         </div>
 
         {/* Navigation buttons */}
-        <button
-          onClick={prevSlide}
-          disabled={totalSlides <= 1}
-          className="absolute left-1 xs:left-2 sm:left-4 top-1/2 transform -translate-y-1/2 z-[999] bg-white/80 hover:bg-white text-gray-800 p-2 xs:p-3 sm:p-4 rounded-full shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+    <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 w-[90%] max-w-2xl flex items-center justify-between bg-black/60 rounded-full px-6 py-3 shadow-lg z-50">
+      <button
+        onClick={prevSlide}
+        disabled={totalSlides <= 1}
+        className="bg-white/80 hover:bg-white text-gray-800 p-2 xs:p-3 sm:p-4 rounded-full shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <svg
+          className="w-4 h-4 xs:w-5 xs:h-5 sm:w-6 sm:h-6 md:w-7 md:h-7"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-          <svg
-            className="w-4 h-4 xs:w-5 xs:h-5 sm:w-6 sm:h-6 md:w-7 md:h-7"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={3}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-        </button>
+          <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={3}
+        d="M15 19l-7-7 7-7"
+          />
+        </svg>
+      </button>
 
-        <button
-          onClick={nextSlide}
-          disabled={totalSlides <= 1}
-          className="absolute right-1 xs:right-2 sm:right-4 top-1/2 transform -translate-y-1/2 z-[999] bg-white/80 hover:bg-white text-gray-800 p-2 xs:p-3 sm:p-4 rounded-full shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+    <button
+      className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold px-6 py-2 rounded-full shadow transition"
+      onClick={() => {
+        if (currentSlideData?.ID) {
+        router.push(`/exhibitor/${currentSlideData.ID}`);
+        }
+      }}
+    >
+      Visit Booth
+    </button>
+
+      <button
+        onClick={nextSlide}
+        disabled={totalSlides <= 1}
+        className="bg-white/80 hover:bg-white text-gray-800 p-2 xs:p-3 sm:p-4 rounded-full shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <svg
+          className="w-4 h-4 xs:w-5 xs:h-5 sm:w-6 sm:h-6 md:w-7 md:h-7"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-          <svg
-            className="w-4 h-4 xs:w-5 xs:h-5 sm:w-6 sm:h-6 md:w-7 md:h-7"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={3}
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        </button>
-
+          <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={3}
+        d="M9 5l7 7-7 7"
+          />
+        </svg>
+      </button>
+    </div>
 
         {/* Avatar and Table Overlay */}
-        <div className="absolute h-full lg:w-[25vw] md:w-[40vw] bottom-4 right-2 z-[100] flex flex-1 max-sm:left-1/2 max-sm:-translate-x-1/2 max-sm:right-auto">
+        <div className="absolute h-full lg:w-[25vw] md:w-[40vw] bottom-4 right-0 z-[100] flex flex-1 max-sm:left-1/2 max-sm:-translate-x-1/2 max-sm:right-auto">
           <div className="h-full w-full flex flex-col relative">
             {/* Image of the avatar */}
             <div className="absolute z-1 bottom-0 lg:left-[22%] md:left-[15%] max-sm:left-[24%]">
