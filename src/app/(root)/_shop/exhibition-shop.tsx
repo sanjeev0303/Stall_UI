@@ -14,7 +14,7 @@ const HangingBoard = ({
           {/* Left thread */}
           <div className="w-[1px] sm:w-[2px] h-6 sm:h-8 md:h-10 lg:h-12 bg-gradient-to-b from-gray-700/80 via-gray-700/60 to-gray-700/20 absolute left-6 sm:left-8 md:left- -translate-x-1/2 shadow-sm" />
           {/* Right thread */}
-          <div className="w-[1px] sm:w-[2px] h-6 sm:h-8 md:h-10 lg:h-12 bg-gradient-to-b from-gray-700/80 via-gray-700/60 to-gray-700/20 absolute right-6 sm:right-8 md:right-9 -translate-x-1/2 shadow-sm" />
+          <div className="w-[1px] sm:w-[2px] h-6 sm:h-8 md:h-10 lg:h-12 bg-gradient-to-b from-gray-700/80 via-gray-700/60 to-gray-700/20 absolute right-10 sm:right-8 md:right-9 -translate-x-1/2 shadow-sm" />
         </div>
 
         {/* Hanging Name Container */}

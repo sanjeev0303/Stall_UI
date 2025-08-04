@@ -252,7 +252,7 @@ export default function StallRoomSlider() {
         <div className="absolute h-full lg:w-[25vw] md:w-[40vw] right-0 bottom-0 lg:right-[-105] z-[100] flex flex-1 max-sm:left-1/2 max-sm:-translate-x-1/2">
           <div className="h-full w-full flex flex-col relative">
             {/* Image of the avatar */}
-            <div className="absolute z-1 bottom-0 lg:left-[22%] md:left-[15%] max-sm:left-[24%]">
+            <div className="absolute z-1 bottom-0 lg:left-[22%] md:left-[15%] max-sm:left-[5vw]">
               <Image
             src="/avatar.png"
             alt="Avatar"
@@ -276,13 +276,13 @@ export default function StallRoomSlider() {
             </div>
 
             {/* Logo on the table */}
-            <div className="absolute z-10 bottom-0 md:bottom-[12vh] max-sm:bottom-[8vh] sm:landscape:bottom-[7vh] lg:left-[20%] md:left-[20%] max-sm:left-[27.5%]">
+            <div className="absolute z-10 bottom-0 md:bottom-[12vh] max-sm:bottom-[8vh] sm:landscape:bottom-[7vh] lg:left-[20%] md:left-[20%] max-sm:left-[25%]">
               <Image
             src="/opexn_logo.png"
             alt="Logo"
             width={120}
             height={50}
-            className="object-fit lg:h-12 md:h-10 w-full max-sm:h-10 sm:landscape:h-[5vh] md:landscape:h-[4vh] md:landscape:w-[10vw]"
+            className="object-fit lg:h-12 md:h-10 w-full max-sm:h-6 sm:landscape:h-[5vh] md:landscape:h-[4vh] md:landscape:w-[10vw]"
             priority
               />
             </div>
