@@ -26,15 +26,35 @@ import { useState, useRef, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { useAppDispatch, useAppSelector } from "@/store/hooks"
+import { fetchExhibitors } from "@/store/exhibitorSlice"
+import { useParams, useRouter } from "next/navigation"
+import React from "react"
 
-const CompanyProfile = () => {
+interface CompanyProfileProps {
+  params: Promise<{ id: string }>
+}
+
+const CompanyProfile = ({ params }: CompanyProfileProps) => {
+  const dispatch = useAppDispatch()
+  const router = useRouter()
+  const { data, loading, error } = useAppSelector((state) => state.exhibitors)
+
+  // Get the ID from params using React.use() for Next.js 15 compatibility
+  const resolvedParams = React.use(params)
+  const exhibitorId = parseInt(resolvedParams?.id || "1")
+
+  // Find the specific exhibitor from Redux store
+  const companyData = data.find(exhibitor => exhibitor.ID === exhibitorId)
+
+  // All React hooks must be called before any early returns
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [isVideoCallOpen, setIsVideoCallOpen] = useState(false)
   const [messages, setMessages] = useState([
     {
       id: 1,
-      sender: "GaloByte",
-      message: "Hello! Welcome to GaloByte. How can we help you today?",
+      sender: companyData?.name || "Company",
+      message: `Hello! Welcome to ${companyData?.name || "our company"}. How can we help you today?`,
       timestamp: new Date(),
       isBot: true,
     },
@@ -42,6 +62,94 @@ const CompanyProfile = () => {
   const [newMessage, setNewMessage] = useState("")
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
+  // Update messages when companyData changes
+  useEffect(() => {
+    if (companyData) {
+      setMessages([
+        {
+          id: 1,
+          sender: companyData.name,
+          message: `Hello! Welcome to ${companyData.name}. How can we help you today?`,
+          timestamp: new Date(),
+          isBot: true,
+        },
+      ])
+    }
+  }, [companyData])
+
+  // Fetch data if not available
+  useEffect(() => {
+    if (data.length === 0 && !loading) {
+      console.log('🔄 Exhibitor Detail: Fetching data for ID:', exhibitorId)
+      dispatch(fetchExhibitors())
+    }
+  }, [dispatch, data.length, loading, exhibitorId])
+
+  // Show loading state if data is being fetched
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-6xl mb-4 animate-pulse">⏳</div>
+          <div className="text-gray-600 text-xl">Loading exhibitor details...</div>
+          <div className="text-sm text-gray-500 mt-2">Fetching real data from API...</div>
+        </div>
+      </div>
+    )
+  }
+
+  // Show error state if API failed
+  if (error) {
+    return (
+      <div className="min-h-screen bg-red-50 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-6">
+          <div className="text-6xl mb-4">🚫</div>
+          <div className="text-red-800 font-semibold mb-2">Failed to Load Exhibitor Data</div>
+          <div className="text-red-600 mb-4 text-sm">{error}</div>
+          <div className="text-gray-600 text-sm mb-6">
+            Unable to fetch exhibitor data from the API server.
+          </div>
+          <Button
+            onClick={() => dispatch(fetchExhibitors())}
+            className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg mr-4"
+          >
+            🔄 Retry API Request
+          </Button>
+          <Button
+            onClick={() => router.push('/')}
+            variant="outline"
+            className="px-6 py-3 rounded-lg"
+          >
+            ← Back to Home
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  // Show not found state if exhibitor doesn't exist
+  if (!companyData) {
+    return (
+      <div className="min-h-screen bg-yellow-50 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-6">
+          <div className="text-6xl mb-4">🔍</div>
+          <div className="text-yellow-800 font-semibold mb-2">Exhibitor Not Found</div>
+          <div className="text-yellow-600 mb-4">No exhibitor found with ID: {exhibitorId}</div>
+          <div className="text-gray-600 text-sm mb-6">
+            The exhibitor you're looking for might have been removed or the ID is incorrect.
+          </div>
+          <Button
+            onClick={() => router.push('/')}
+            className="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg"
+          >
+            ← Back to Home
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  // Helper functions
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
@@ -66,7 +174,7 @@ const CompanyProfile = () => {
       setTimeout(() => {
         const botResponse = {
           id: messages.length + 2,
-          sender: "GaloByte",
+          sender: companyData.name,
           message:
             "Thank you for your message! Our team will get back to you shortly. You can also schedule a video call for immediate assistance.",
           timestamp: new Date(),
@@ -98,62 +206,7 @@ const CompanyProfile = () => {
     },
   }
 
-  const companyData = {
-    id: 1,
-    name: "GaloByte",
-    logo: "https://res.cloudinary.com/dng61q3lg/image/upload/v1753555568/rtnm_zk88ke.png",
-    banner: "https://res.cloudinary.com/dng61q3lg/image/upload/v1753780471/bannerAgri_mrsukk.jpg",
-    websiteURL: "https://galobyte.site",
-    dpiitCertNumber: "zhdbkjbefkBKJ",
-    address: {
-      street: "Meerut Institute Of Technology, Baral Partapur, Meerut, Uttar Pr",
-      city: "Meerut",
-      state: "Uttar Pradesh",
-      pincode: "250005",
-    },
-    director: {
-      directorName: "Shivajee NLN",
-      directorEmail: "ultimateintimat3434er@gmail.com",
-    },
-    spoc: {
-      Name: "Shivajee NLN",
-      Email: "ultima3434teintimater@gmail.com",
-      Phone: "094300832753434",
-      Position: "adefrgerfgvrefgerfgvfrfe",
-    },
-    eventIntent: {
-      whyParticipate: "fagvrefgerfgre",
-      expectation: "aerfrefefgv",
-      consentToPay: true,
-    },
-    fundingInfo: {
-      fundingType: "Bootstrapped",
-    },
-    revenueInfo: {
-      revenueBracket: "₹25L–₹1Cr",
-      userImpact: 555,
-    },
-    products: [
-      {
-        id: 1,
-        title: "Web Solution",
-        category: "Software",
-        productType: "Digital",
-        price: 10000,
-        quantity: 1,
-        tags: "web, developement",
-      },
-      {
-        id: 2,
-        title: "Backend Infra",
-        category: "Software",
-        productType: "Digital",
-        price: 565,
-        quantity: 1,
-        tags: "backend",
-      },
-    ],
-  }
+  // Chat Widget Component
 
   // Chat Widget Component
   const ChatWidget = () => (
@@ -425,7 +478,7 @@ const CompanyProfile = () => {
                     <div className="grid gap-6">
                       {companyData.products.map((product, index) => (
                         <motion.div
-                          key={product.id}
+                          key={product.ID}
                           initial={{ x: -20, opacity: 0 }}
                           animate={{ x: 0, opacity: 1 }}
                           transition={{ delay: index * 0.1 }}
@@ -435,21 +488,19 @@ const CompanyProfile = () => {
                             <div>
                               <h3 className="text-xl font-bold text-gray-800 mb-2">{product.title}</h3>
                               <Badge className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white">
-                                {product.category}
+                                Product
                               </Badge>
                             </div>
                             <div className="text-right">
-                              <p className="text-2xl font-bold text-orange-600">₹{product.price.toLocaleString()}</p>
-                              <p className="text-sm text-gray-600">{product.productType}</p>
+                              <p className="text-lg font-bold text-orange-600">ID: {product.ID}</p>
+                              <p className="text-sm text-gray-600">Digital Solution</p>
                             </div>
                           </div>
-                          <div className="flex flex-wrap gap-2">
-                            {product.tags.split(", ").map((tag, tagIndex) => (
-                              <Badge key={tagIndex} variant="outline" className="border-orange-300 text-orange-700">
-                                {tag}
-                              </Badge>
-                            ))}
-                          </div>
+                          {product.description && (
+                            <div className="mt-4">
+                              <p className="text-gray-600">{product.description}</p>
+                            </div>
+                          )}
                         </motion.div>
                       ))}
                     </div>
@@ -457,34 +508,33 @@ const CompanyProfile = () => {
                 </Card>
               </motion.div>
 
-              {/* Event Intent Section */}
+              {/* Company Overview Section */}
               <motion.div variants={itemVariants}>
                 <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
                   <CardHeader className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-t-lg">
                     <CardTitle className="flex items-center gap-2">
                       <Target className="h-6 w-6" />
-                      Event Participation
+                      Company Overview
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="p-6">
                     <div className="space-y-4">
                       <div>
-                        <h4 className="font-semibold text-gray-800 mb-2">Why Participate</h4>
+                        <h4 className="font-semibold text-gray-800 mb-2">Company Information</h4>
                         <p className="text-gray-600 bg-gradient-to-r from-orange-50 to-yellow-50 p-4 rounded-lg">
-                          {companyData.eventIntent.whyParticipate}
+                          {companyData.name} is a technology company focused on delivering innovative solutions.
+                          Visit our website to learn more about our offerings and expertise.
                         </p>
                       </div>
                       <div>
-                        <h4 className="font-semibold text-gray-800 mb-2">Expectations</h4>
+                        <h4 className="font-semibold text-gray-800 mb-2">Business Focus</h4>
                         <p className="text-gray-600 bg-gradient-to-r from-yellow-50 to-orange-50 p-4 rounded-lg">
-                          {companyData.eventIntent.expectation}
+                          We specialize in providing digital solutions and technology services to help businesses grow and succeed in the modern marketplace.
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Badge
-                          className={`${companyData.eventIntent.consentToPay ? "bg-green-500" : "bg-red-500"} text-white`}
-                        >
-                          {companyData.eventIntent.consentToPay ? "Consent to Pay: Yes" : "Consent to Pay: No"}
+                        <Badge className="bg-blue-500 text-white">
+                          DPIIT Certified: {companyData.dpiitCertNumber}
                         </Badge>
                       </div>
                     </div>

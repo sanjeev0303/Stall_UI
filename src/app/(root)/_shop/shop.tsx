@@ -1,8 +1,9 @@
 "use client";
 
-import { useShop } from "@/hooks/useShop";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { fetchExhibitors } from "@/store/exhibitorSlice";
 import Image from "next/image";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useMemo } from "react";
 import Ceiling from "./Ceiling";
 import Exhibitor from "./Exhibitor";
 import Floor from "./Floor";
@@ -15,31 +16,47 @@ export default function StallRoomSlider() {
   const [autoPlay, setAutoPlay] = useState(false);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
-  const { data } = useShop();
+
+  const dispatch = useAppDispatch();
+  const { data, loading, error, dataSource } = useAppSelector((state) => state.exhibitors);
   const router = useRouter();
 
-  const slides = data ?? [];
+  // Fetch data on component mount
+  useEffect(() => {
+    dispatch(fetchExhibitors());
+  }, [dispatch]);
+
+  const slides = useMemo(() => data ?? [], [data]);
 
   useEffect(() => {
-    console.log("Shop data:", data);
-    console.log("Current slide:", currentSlide);
-    console.log("Current slide data:", slides[currentSlide]);
-  }, [data, currentSlide, slides]);
+    console.log("📊 Redux Store - Real Data Status:");
+    console.log("  - Data Source:", dataSource);
+    console.log("  - Loading State:", loading);
+    console.log("  - Error State:", error);
+    console.log("  - Data Count:", data?.length || 0);
+    console.log("  - Current Slide:", currentSlide + 1);
+    console.log("  - Current Exhibitor:", slides[currentSlide]?.name || 'N/A');
+    if (dataSource === 'api') {
+      console.log("✅ Using 100% Real API Data - No Mock Data");
+    }
+  }, [data, dataSource, loading, error, currentSlide, slides]);
 
   // Use data as the slides array, fallback to empty array if not loaded
   const totalSlides = slides.length;
 
-  const nextSlide = useCallback(
-    () => setCurrentSlide((p) => (p + 1) % totalSlides),
-    [totalSlides]
-  );
+  const nextSlide = useCallback(() => {
+    const newSlide = (currentSlide + 1) % totalSlides;
+    console.log(`🔄 Slide Navigation: ${currentSlide + 1} → ${newSlide + 1}`);
+    console.log(`📊 Data Source: ${dataSource} (Real API Data - No Additional Requests)`);
+    setCurrentSlide(newSlide);
+  }, [currentSlide, totalSlides, dataSource]);
 
-  const prevSlide = useCallback(
-    () => setCurrentSlide((p) => (p - 1 + totalSlides) % totalSlides),
-    [totalSlides]
-  );
-
-  const goToSlide = (i: number) => i !== currentSlide && setCurrentSlide(i);
+  const prevSlide = useCallback(() => {
+    const newSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+    console.log(`🔄 Slide Navigation: ${currentSlide + 1} → ${newSlide + 1}`);
+    console.log(`📊 Data Source: ${dataSource} (Real API Data - No Additional Requests)`);
+    setCurrentSlide(newSlide);
+  }, [currentSlide, totalSlides, dataSource]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -76,19 +93,58 @@ export default function StallRoomSlider() {
 
   const currentSlideData = slides[currentSlide];
 
-  // Early return if no data
-  if (!slides.length) {
+  // Early return if loading or no data
+  if (loading) {
     return (
       <div className="relative w-full h-screen overflow-hidden bg-gray-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-4xl mb-4">⏳</div>
-          <div className="text-gray-600">Loading exhibitors...</div>
+          <div className="text-4xl mb-4 animate-pulse">⏳</div>
+          <div className="text-gray-600">Loading real exhibitor data...</div>
+          <div className="text-sm text-gray-500 mt-2">Fetching from API...</div>
         </div>
       </div>
     );
   }
 
-  return (
+  if (error) {
+    return (
+      <div className="relative w-full h-screen overflow-hidden bg-red-50 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-6">
+          <div className="text-6xl mb-4">🚫</div>
+          <div className="text-red-800 font-semibold mb-2">Failed to Load Real Data</div>
+          <div className="text-red-600 mb-4 text-sm">{error}</div>
+          <div className="text-gray-600 text-sm mb-6">
+            Unable to fetch exhibitor data from the API server.
+            Please check your internet connection and try again.
+          </div>
+          <button
+            onClick={() => dispatch(fetchExhibitors())}
+            className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+          >
+            🔄 Retry API Request
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!slides.length) {
+    return (
+      <div className="relative w-full h-screen overflow-hidden bg-yellow-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-6xl mb-4">📭</div>
+          <div className="text-yellow-800 font-semibold mb-2">No Exhibitors Found</div>
+          <div className="text-yellow-600 mb-4">The API returned an empty dataset.</div>
+          <button
+            onClick={() => dispatch(fetchExhibitors())}
+            className="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+          >
+            🔄 Refresh Data
+          </button>
+        </div>
+      </div>
+    );
+  }  return (
     <div
       className="relative w-full h-screen overflow-hidden bg-gray-100"
       onTouchStart={handleTouchStart}
@@ -117,26 +173,20 @@ export default function StallRoomSlider() {
           <Ceiling />
 
           {/* Wall or banner of the shop */}
-          <Wall banner={currentSlideData?.banner}>
+          <Wall
+            banner={currentSlideData?.banner}
+            companyData={currentSlideData ? {
+              name: currentSlideData.name || "",
+              logo: currentSlideData.logo || "",
+              products: currentSlideData.products || [],
+              revenueInfo: currentSlideData.revenueInfo,
+              fundingInfo: currentSlideData.fundingInfo
+            } : undefined}
+          >
             <div className="flex flex-col">
               {/* Title on top of the wall - Hanging Name */}
               <HangingBoard currentSlideData={currentSlideData} />
 
-              {/* Main Exhibitor Display */}
-              <div className="w-full max-w-sm xs:max-w-md sm:max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto flex justify-center items-center mt-32 md:mt-40">
-                {/* Single Exhibitor Card - Changes with slide */}
-                <div className="flex justify-center">
-                  <Exhibitor
-                    key={`exhibitor-${currentSlide}`} // Force re-render on slide change
-                    exhibitorId={currentSlideData?.ID} // Use current slide's exhibitor ID
-                    isActive={true} // Current slide is always active
-                    slideNumber={currentSlide + 1} // Pass current slide number
-                    onSlideChange={(slideNum) => {
-                      console.log(`Exhibitor interaction on slide ${slideNum}`);
-                    }}
-                  />
-                </div>
-              </div>
             </div>
           </Wall>
 
@@ -199,41 +249,41 @@ export default function StallRoomSlider() {
     </div>
 
         {/* Avatar and Table Overlay */}
-        <div className="absolute h-full lg:w-[25vw] md:w-[40vw] bottom-4 right-0 z-[100] flex flex-1 max-sm:left-1/2 max-sm:-translate-x-1/2 max-sm:right-auto">
+        <div className="absolute h-full lg:w-[25vw] md:w-[40vw] right-0 bottom-0 lg:right-[-105] z-[100] flex flex-1 max-sm:left-1/2 max-sm:-translate-x-1/2">
           <div className="h-full w-full flex flex-col relative">
             {/* Image of the avatar */}
             <div className="absolute z-1 bottom-0 lg:left-[22%] md:left-[15%] max-sm:left-[24%]">
               <Image
-                src="/avatar.png"
-                alt="Avatar"
-                width={230}
-                height={220}
-                className="lg:h-[52vh] md:h-[50vh] h-[60vh] max-sm:h-[42vh] sm:landscape:h-[45vh] sm:landscape:w-[10vw]"
-                priority
+            src="/avatar.png"
+            alt="Avatar"
+            width={230}
+            height={220}
+            className="lg:h-[52vh] md:h-[50vh] h-[60vh] max-sm:h-[42vh] sm:landscape:h-[45vh] sm:landscape:w-[10vw]"
+            priority
               />
             </div>
 
             {/* Table Image as background */}
             <div className="absolute z-5 lg:bottom-[-65px] md:bottom-[-14vh] bottom-[-55px] sm:landscape:bottom-[-14vh] max-sm:left-[9%]">
               <Image
-                src="/table.png"
-                alt="Table"
-                width={350}
-                height={100}
-                className="object-fit lg:h-[70vh] h-[90vh] md:h-[78vh] max-sm:h-[52vh] sm:landscape:h-[70vh] sm:landscape:w-[40vh]"
-                priority
+            src="/table.png"
+            alt="Table"
+            width={350}
+            height={100}
+            className="object-fit lg:h-[70vh] h-[90vh] md:h-[78vh] max-sm:h-[52vh] sm:landscape:h-[70vh] sm:landscape:w-[40vh]"
+            priority
               />
             </div>
 
             {/* Logo on the table */}
             <div className="absolute z-10 bottom-0 md:bottom-[12vh] max-sm:bottom-[8vh] sm:landscape:bottom-[7vh] lg:left-[20%] md:left-[20%] max-sm:left-[27.5%]">
               <Image
-                src="/opexn_logo.png"
-                alt="Logo"
-                width={120}
-                height={50}
-                className="object-fit lg:h-12 md:h-10 w-full max-sm:h-10 sm:landscape:h-[5vh] md:landscape:h-[4vh] md:landscape:w-[10vw]"
-                priority
+            src="/opexn_logo.png"
+            alt="Logo"
+            width={120}
+            height={50}
+            className="object-fit lg:h-12 md:h-10 w-full max-sm:h-10 sm:landscape:h-[5vh] md:landscape:h-[4vh] md:landscape:w-[10vw]"
+            priority
               />
             </div>
           </div>

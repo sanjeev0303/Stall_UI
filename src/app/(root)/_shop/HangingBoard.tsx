@@ -8,18 +8,16 @@ const HangingBoard = ({
 }) => {
   return (
     <div>
-      <div className="absolute z-[100] top-0 left-1/2 -translate-x-1/2">
+      <div className="absolute z-[100] lg:top-[-34] top-0 left-1/2 -translate-x-1/2">
         {/* Hanging Threads */}
         <div
           className=" absolute flex justify-center w-full"
           style={{ top: 0 }}
         >
-          {/* Center thread */}
-          <div className=" w-[2px] md:h-12 h-9 bg-gradient-to-b from-gray-700/80 via-gray-700/60 to-gray-700/20 absolute left-1/2 -translate-x-1/2 shadow-sm" />
           {/* Left thread */}
-          <div className=" w-[2px] md:h-12 h-9 bg-gradient-to-b from-gray-700/80 via-gray-700/60 to-gray-700/20 absolute left-9 -translate-x-1/2 shadow-sm" />
+          <div className=" w-[1px] sm:w-[2px] h-6 sm:h-8 md:h-10 lg:h-12 bg-gradient-to-b from-gray-700/80 via-gray-700/60 to-gray-700/20 absolute left-6 sm:left-8 md:left- -translate-x-1/2 shadow-sm" />
           {/* Right thread */}
-          <div className=" w-[2px] md:h-12 h-9 bg-gradient-to-b from-gray-700/80 via-gray-700/60 to-gray-700/20 absolute right-9 -translate-x-1/2 shadow-sm" />
+          <div className="w-[1px] sm:w-[2px] h-6 sm:h-8 md:h-10 lg:h-12 bg-gradient-to-b from-gray-700/80 via-gray-700/60 to-gray-700/20 absolute right-6 sm:right-8 md:right-9 -translate-x-1/2 shadow-sm" />
         </div>
 
         {/* Hanging Name Container */}
@@ -30,9 +28,9 @@ const HangingBoard = ({
             <div className="absolute inset-0 bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-pink-500/10 animate-pulse" />
 
             {/* Hanging Points */}
-            <div className="absolute -top-1 left-8 w-2 h-2 bg-white/80 rounded-full shadow-lg" />
-            <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white/80 rounded-full shadow-lg" />
-            <div className="absolute -top-1 right-8 w-2 h-2 bg-white/80 rounded-full shadow-lg" />
+
+            <div className="absolute top-[30px] left-9 -translate-x-1/2 w-3 h-3 bg-white/80 rounded-full shadow-lg" />
+            <div className="absolute top-[30px] right-5 -translate-x-1/2 w-3 h-3 bg-white/80 rounded-full shadow-lg" />
 
             {/* Floating Text */}
             <div className="flex items-center justify-center h-full">
